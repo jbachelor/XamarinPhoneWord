@@ -24,6 +24,19 @@ namespace Phoneworld_ios
 			PhoneNumbers = new List<string>();
 			ConfigureTranslatedNumberButton();
 			ConfigureCallButton();
+			ConfigureCallHistoryButton();
+		}
+
+		private void ConfigureCallHistoryButton()
+		{
+			CallHistoryButton.TouchUpInside += (object sender, EventArgs e) =>
+			{
+				CallHistoryController callHistoryController = this.Storyboard.InstantiateViewController("CallHistoryController") as CallHistoryController;
+				if (callHistoryController == null) return;
+
+				callHistoryController.PhoneNumbers = PhoneNumbers;
+				this.NavigationController.PushViewController(callHistoryController, true);
+			};
 		}
 
 		private void ConfigureCallButton()
@@ -81,18 +94,6 @@ namespace Phoneworld_ios
 		}
 
 
-
-
-		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
-		{
-			base.PrepareForSegue(segue, sender);
-
-			var callHistoryController = segue.DestinationViewController as CallHistoryController;
-			if (callHistoryController != null)
-			{
-				callHistoryController.PhoneNumbers = PhoneNumbers;
-			}
-		}
 
 		public override void DidReceiveMemoryWarning()
 		{

@@ -61,9 +61,7 @@
                                 <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
                                     <rect key="frame" x="20" y="404" width="335" height="30"/>
                                 </variation>
-                                <connections>
-                                    <segue id="225" destination="175" kind="show"/>
-                                </connections>
+                                <connections/>
                             </button>
                         </subviews>
                         <variation key="default">
@@ -114,7 +112,7 @@
         </scene>
         <scene sceneID="174">
             <objects>
-                <tableViewController id="175" sceneMemberID="viewController" customClass="CallHistoryController" title="Call History">
+                <tableViewController id="175" sceneMemberID="viewController" customClass="CallHistoryController" title="Call History" storyboardIdentifier="CallHistoryController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="176">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
