@@ -18,7 +18,7 @@ namespace Phoneworld_ios
 			var newNumberSB = new StringBuilder();
 			foreach (var c in raw)
 			{
-				if (" -0123456789".Contains(c))
+				if ("-0123456789".Contains(c))
 				{
 					newNumberSB.Append(c);
 				}

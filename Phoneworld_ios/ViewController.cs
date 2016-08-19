@@ -1,6 +1,7 @@
 ﻿using System;
 using UIKit;
 using Foundation;
+using System.Collections.Generic;
 
 
 namespace Phoneworld_ios
@@ -8,6 +9,8 @@ namespace Phoneworld_ios
 	public partial class ViewController : UIViewController
 	{
 		private string translatedNumber;
+		private string phoneWord;
+		public List<string> PhoneNumbers { get; set; }
 
 		protected ViewController(IntPtr handle) : base(handle)
 		{
@@ -18,29 +21,56 @@ namespace Phoneworld_ios
 		{
 			base.ViewDidLoad();
 			// Perform any additional setup after loading the view, typically from a nib.
-
+			PhoneNumbers = new List<string>();
 			ConfigureTranslatedNumberButton();
 			ConfigureCallButton();
-		}
-
-		public override void DidReceiveMemoryWarning()
-		{
-			base.DidReceiveMemoryWarning();
-			// Release any cached data, images, etc that aren't in use.
 		}
 
 		private void ConfigureCallButton()
 		{
 			CallButton.TouchUpInside += (object sender, EventArgs e) =>
 			{
-				var url = new NSUrl($"tel:{translatedNumber}");
-
-				if (!UIApplication.SharedApplication.OpenUrl(url))
-				{
-					ShowOkAlertDialog("Sorry...",
-									  "The scheme 'tel:' is not supported on this device.");
-				}
+				CallButtonHandler();
 			};
+		}
+
+		private void ConfigureTranslatedNumberButton()
+		{
+			translatedNumber = string.Empty;
+			TranslateButton.TouchUpInside += (object sender, EventArgs e) =>
+			{
+				TranslateNumberButtonHandler();
+			};
+		}
+
+		private void TranslateNumberButtonHandler()
+		{
+			PhoneNumberText.ResignFirstResponder();
+			phoneWord = PhoneNumberText.Text.Trim();
+			translatedNumber = PhoneTranslator.ToNumber(phoneWord);
+
+			if (string.IsNullOrWhiteSpace(translatedNumber))
+			{
+				CallButton.SetTitle("Call", UIControlState.Normal);
+				CallButton.Enabled = false;
+			}
+			else
+			{
+				CallButton.SetTitle($"Call {translatedNumber}", UIControlState.Normal);
+				CallButton.Enabled = true;
+			}
+		}
+
+		private void CallButtonHandler()
+		{
+			PhoneNumbers.Add($"{phoneWord} ({translatedNumber})");
+			var url = new NSUrl($"tel:{translatedNumber}");
+
+			if (!UIApplication.SharedApplication.OpenUrl(url))
+			{
+				ShowOkAlertDialog("Sorry...",
+								  "The scheme 'tel:' is not supported on this device.");
+			}
 		}
 
 		private void ShowOkAlertDialog(string title = "Alert", string message = "Sorry, unable to perform this action")
@@ -50,25 +80,24 @@ namespace Phoneworld_ios
 			PresentViewController(alert, true, null);
 		}
 
-		private void ConfigureTranslatedNumberButton()
-		{
-			translatedNumber = string.Empty;
-			TranslateButton.TouchUpInside += (object sender, EventArgs e) =>
-			{
-				PhoneNumberText.ResignFirstResponder();
-				translatedNumber = PhoneTranslator.ToNumber(PhoneNumberText.Text);
 
-				if (string.IsNullOrWhiteSpace(translatedNumber))
-				{
-					CallButton.SetTitle("Call", UIControlState.Normal);
-					CallButton.Enabled = false;
-				}
-				else
-				{
-					CallButton.SetTitle($"Call {translatedNumber}", UIControlState.Normal);
-					CallButton.Enabled = true;
-				}
-			};
+
+
+		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
+		{
+			base.PrepareForSegue(segue, sender);
+
+			var callHistoryController = segue.DestinationViewController as CallHistoryController;
+			if (callHistoryController != null)
+			{
+				callHistoryController.PhoneNumbers = PhoneNumbers;
+			}
+		}
+
+		public override void DidReceiveMemoryWarning()
+		{
+			base.DidReceiveMemoryWarning();
+			// Release any cached data, images, etc that aren't in use.
 		}
 	}
 }
